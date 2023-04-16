@@ -3,9 +3,10 @@ package ua.com.project.repository;
 import org.hibernate.SessionFactory;
 import ua.com.project.dao.CategoryDao;
 import ua.com.project.entity.Category;
-import ua.com.project.entity.Client;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class CategoryRepository implements CategoryDao{
@@ -16,12 +17,22 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public void save(Category obj) {
+    public void saveNativeSQL(Category obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        // SQL
-        entityManager.createNativeQuery("INSERT INTO `category` (`name`, `description`, `image`) VALUES (?, ?, ?)")
+        Query query = entityManager.createNativeQuery(
+                        "SELECT * FROM `category` WHERE `name` = ?1", Category.class)
+                .setParameter(1, obj.getName());
+        List<Category> categories = query.getResultList();
+        if (!categories.isEmpty()) {
+            entityManager.getTransaction().rollback();
+            entityManager.close();
+            throw new RuntimeException("Така категорія вже є");
+        }
+
+        entityManager.createNativeQuery(
+                        "INSERT INTO `category` (`name`, `description`, `image`) VALUES (?, ?, ?)")
                 .setParameter(1, obj.getName())
                 .setParameter(2, obj.getDescription())
                 .setParameter(3, obj.getImage())
@@ -32,11 +43,32 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public void update(Category obj) {
+    public void saveHQL(Category obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.createNativeQuery("update `category` set name=?, description=?, image=? where id=?")
+        Query query = entityManager.createQuery(
+                        "SELECT c FROM Category as c WHERE c.name = :name", Category.class)
+                .setParameter("name", obj.getName());
+        List<Category> categories = query.getResultList();
+        if (!categories.isEmpty()) {
+            entityManager.getTransaction().rollback();
+            entityManager.close();
+            throw new RuntimeException("Категория с таким названием уже существует");
+        }
+        entityManager.persist(obj);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void updateNativeSQL(Category obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery(
+                "update `category` set name=?, description=?, image=? where id=?")
                 .setParameter(1, obj.getName())
                 .setParameter(2, obj.getDescription())
                 .setParameter(3, obj.getImage())
@@ -48,11 +80,31 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public void delete(Category obj) {
+    public void updateHQL(Category obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.createQuery("delete from Category as c where c.id=:id")
-                .setParameter("id", obj.getRooms())
+
+        Query query = entityManager.createQuery(
+                "update Category set name=:name, description=:description, image=:image where id=:id")
+                .setParameter("name", obj.getName())
+                .setParameter("description", obj.getDescription())
+                .setParameter("image", obj.getImage())
+                .setParameter("id", obj.getId());
+
+        query.executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteNativeSQL(Category obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery(
+                "delete from `category` where id=?")
+                .setParameter(1, obj.getId())
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -60,11 +112,28 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteHQL(Category obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.createQuery("delete from Category as c")
+        Query query = entityManager.createQuery(
+                "delete from Category where id=:id")
+                .setParameter("id", obj.getId());
+
+        query.executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+
+    @Override
+    public void deleteAllNativeSQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery(
+                "delete from `category`")
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -72,11 +141,25 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public List<Category> findAll() {
+    public void deleteAllHQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        List<Category> category1 = entityManager.createNativeQuery("select * from `category`").getResultList();
+        entityManager.createQuery(
+                "delete from Category")
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public List<Category> findAllNativeSQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        List<Category> category1 = entityManager.createNativeQuery(
+                "select * from `category`").getResultList();
 
         entityManager.getTransaction().commit();
         entityManager.close();
@@ -85,13 +168,31 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public Category findById(Long id) {
+    public List<Category> findAllHQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        Category category1 = entityManager.createQuery("select p from Category as p where  p.id=:id", Category.class)
-                .setParameter("id", id)
-                .getResultList().get(0);
+        TypedQuery<Category> query = entityManager.createQuery(
+                "SELECT c FROM Category as c", Category.class);
+
+        List<Category> categories =  query.getResultList();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return categories;
+    }
+
+    @Override
+    public Category findByIdNativeSQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Query query = entityManager.createNativeQuery(
+                "SELECT * FROM `category` WHERE id = :id", Category.class)
+                .setParameter("id", id);
+
+        Category category1 = (Category) query.getSingleResult();
 
         entityManager.getTransaction().commit();
         entityManager.close();
@@ -100,14 +201,48 @@ public class CategoryRepository implements CategoryDao{
     }
 
     @Override
-    public Category findByName(String name) {
+    public Category findByIdHQL(Long id) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        Category category1 = entityManager.createQuery("select c from Category as c where  c.name=:name",
-                        Category.class)
+        Query query = entityManager.createQuery(
+                "SELECT c FROM Category as c WHERE c.id=:id")
+                .setParameter("id", id);
+
+        Category category1 = (Category) query.getSingleResult();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return category1;
+    }
+
+    @Override
+    public Category findByNameNativeSQL(String name) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Query query = entityManager.createNativeQuery(
+                        "SELECT * FROM `category` WHERE name = :name", Category.class)
+                .setParameter("name", name);
+
+        Category category1 = (Category) query.getSingleResult();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return category1;
+    }
+
+    @Override
+    public Category findByNameHQL(String name) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Category category1 = (Category) entityManager.createQuery(
+                "SELECT c FROM Category as c WHERE c.name = :name")
                 .setParameter("name", name)
-                .getResultList().get(0);
+                .getSingleResult();
 
         entityManager.getTransaction().commit();
         entityManager.close();

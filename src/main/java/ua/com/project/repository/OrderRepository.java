@@ -14,7 +14,7 @@ public class OrderRepository implements OrderDao {
         this.sessionFactory = sessionFactory;
     }
     @Override
-    public void save(Order obj) {
+    public void saveNativeSQL(Order obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -30,7 +30,18 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public void update(Order obj) {
+    public void saveHQL(Order obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.persist(obj);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void updateNativeSQL(Order obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -39,19 +50,49 @@ public class OrderRepository implements OrderDao {
                 .setParameter(2, obj.getPayment())
                 .setParameter(3, obj.getTimeOfStay())
                 .setParameter(4, obj.getId())
-
                 .executeUpdate();
+
         entityManager.getTransaction().commit();
 
         entityManager.close();
     }
 
     @Override
-    public void delete(Order obj) {
+    public void updateHQL(Order obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createQuery(
+                "update Order set date_created=:date_cr, payment=:payment, timeOfStay=:time where id=:id")
+                .setParameter("date_cr", obj.getDate_created())
+                .setParameter("payment", obj.getPayment())
+                .setParameter("time", obj.getTimeOfStay())
+                .setParameter("id", obj.getId())
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteNativeSQL(Order obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("delete from `orders` where id=?")
+                .setParameter(1, obj.getId())
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteHQL(Order obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
         entityManager.createQuery("delete from Order as o where o.id=:id")
-                .setParameter("id", obj.getClient())
+                .setParameter("id", obj.getId())
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -59,11 +100,11 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteAllNativeSQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.createQuery("delete from Order as o")
+        entityManager.createNativeQuery("delete * from `orders`")
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -71,7 +112,19 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public List<Order> findAll() {
+    public void deleteAllHQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createQuery("delete from Order")
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public List<Order> findAllNativeSQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -84,7 +137,36 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public Order findById(Long id) {
+    public List<Order> findAllHQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        List<Order> order = entityManager.createQuery("select o from Order as o").getResultList();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return order;
+    }
+
+    @Override
+    public Order findByIdNativeSQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Order order = (Order) entityManager.createNativeQuery(
+                "select * from `orders` where  id=?", Order.class)
+                .setParameter(1, id)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return order;
+    }
+
+    @Override
+    public Order findByIdHQL(Long id) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -99,7 +181,23 @@ public class OrderRepository implements OrderDao {
     }
 
     @Override
-    public Order findByName(String payment) {
+    public Order findByNameNativeSQL(String payment) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Order order = (Order) entityManager.createNativeQuery(
+                "select * from `orders` where payment=?", Order.class)
+                .setParameter(1, payment)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return order;
+    }
+
+    @Override
+    public Order findByNameHQL(String payment) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 

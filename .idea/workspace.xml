@@ -4,35 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eaab43f1-2cc2-47b0-a15c-c29d8a9667c9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/config/Factory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/CategoryDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/ClientDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/GeneralDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/OrderDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/RoomsDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/RoomsHasOrderDao.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/entity/Category.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/entity/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/entity/Order.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/entity/Rooms.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/entity/RoomsHasOrder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/CategoryRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/ClientRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/OrderRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsHasOrderRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/persistence.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/ua/com/project/TestHibernate.java" afterDir="false" />
+    <list default="true" id="eaab43f1-2cc2-47b0-a15c-c29d8a9667c9" name="Changes" comment="lab11">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/GeneralDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/dao/GeneralDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/ClientRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/ClientRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/OrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsHasOrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsHasOrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ua/com/project/repository/RoomsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/ua/com/project/TestHibernate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ua/com/project/TestHibernate.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,8 +61,8 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="TestHibernate" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="lab11" />
+    <configuration name="ua.com.project in lab12" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="lab12" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="ua.com.project.*" />
@@ -90,15 +70,16 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="ua.com.project" />
-      <option name="MAIN_CLASS_NAME" value="ua.com.project.TestHibernate" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="MAIN_CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.TestHibernate" />
+        <item itemvalue="JUnit.ua.com.project in lab12" />
       </list>
     </recent_temporary>
   </component>
@@ -111,8 +92,19 @@
       <option name="presentableId" value="Default" />
       <updated>1681310915142</updated>
       <workItem from="1681310917594" duration="14995000" />
-      <workItem from="1681386105655" duration="4502000" />
+      <workItem from="1681386105655" duration="11748000" />
+      <workItem from="1681502952396" duration="9000" />
+      <workItem from="1681642930294" duration="13646000" />
+      <workItem from="1681664524002" duration="201000" />
     </task>
+    <task id="LOCAL-00001" summary="lab11">
+      <created>1681390705924</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1681390705924</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,5 +120,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="lab11" />
+    <option name="LAST_COMMIT_MESSAGE" value="lab11" />
   </component>
 </project>

@@ -5,6 +5,7 @@ import ua.com.project.dao.ClientDao;
 import ua.com.project.entity.Client;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class ClientRepository implements ClientDao {
@@ -15,11 +16,10 @@ public class ClientRepository implements ClientDao {
     }
 
     @Override
-    public void save(Client obj) {
+    public void saveNativeSQL(Client obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        // SQL
         entityManager.createNativeQuery("INSERT INTO `client` (`surname`, `lastname`, `age`, `phone` , `email`) VALUES (?, ?, ?, ?, ?)")
                 .setParameter(1, obj.getSurname())
                 .setParameter(2, obj.getLastname())
@@ -33,7 +33,18 @@ public class ClientRepository implements ClientDao {
     }
 
     @Override
-    public void update(Client obj) {
+    public void saveHQL(Client obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.persist(obj);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void updateNativeSQL(Client obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -51,11 +62,32 @@ public class ClientRepository implements ClientDao {
     }
 
     @Override
-    public void delete(Client obj) {
+    public void updateHQL(Client obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.createQuery("delete from Client as p where p.id=:id")
-                .setParameter("id", obj.getOrder())
+
+        entityManager.createQuery(
+                "update Client set surname=:surname, lastname=:lastname, age=:age, " +
+                        "phone=:phone, email=:email where id=:id")
+                .setParameter("surname", obj.getSurname())
+                .setParameter("lastname", obj.getLastname())
+                .setParameter("age", obj.getAge())
+                .setParameter("phone", obj.getPhone())
+                .setParameter("email", obj.getEmail())
+                .setParameter("id", obj.getId())
+                .executeUpdate();
+        entityManager.getTransaction().commit();
+
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteNativeSQL(Client obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery("delete from `client` where id=?")
+                .setParameter(1, obj.getId())
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -63,11 +95,12 @@ public class ClientRepository implements ClientDao {
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteHQL(Client obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        entityManager.createQuery("delete from Client as c")
+        entityManager.createQuery("delete from Client where id=:id")
+                .setParameter("id", obj.getId())
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -75,45 +108,116 @@ public class ClientRepository implements ClientDao {
     }
 
     @Override
-    public List<Client> findAll() {
+    public void deleteAllNativeSQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        List<Client> clients1 = entityManager.createNativeQuery("select * from `client`").getResultList();
+        entityManager.createNativeQuery("delete * from `client`")
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteAllHQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createQuery("delete from Client")
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public List<Client> findAllNativeSQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        List<Client> clients = entityManager.createNativeQuery("select * from `client`").getResultList();
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return clients1;
+        return clients;
     }
 
     @Override
-    public Client findById(Long id) {
+    public List<Client> findAllHQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        Client clients1 = entityManager.createQuery("select p from Client as p where  p.id=:id", Client.class)
+        List<Client> clients = entityManager.createQuery("SELECT c FROM Client c").getResultList();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return clients;
+    }
+
+    @Override
+    public Client findByIdNativeSQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Client client = (Client) entityManager.createNativeQuery(
+                "select * from `client` where id=?", Client.class)
+                .setParameter(1, id)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return client;
+    }
+
+    @Override
+    public Client findByIdHQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Client client = (Client) entityManager.createQuery(
+                "select c from Client as c where  c.id=:id")
                 .setParameter("id", id)
                 .getResultList().get(0);
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return clients1;
+        return client;
     }
 
     @Override
-    public Client findByName(String lastname) {
+    public Client findByNameNativeSQL(String lastname) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        Client clients = entityManager.createQuery("select p from Client as p where  p.lastname=:lastname", Client.class)
+        Client client = (Client) entityManager.createNativeQuery(
+                "select * from `client` as c where c.lastname=?", Client.class)
+                .setParameter(1, lastname)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return client;
+    }
+
+    @Override
+    public Client findByNameHQL(String lastname) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Client client = (Client) entityManager.createQuery(
+                "select c from Client as c where  c.lastname=:lastname")
                 .setParameter("lastname", lastname)
                 .getResultList().get(0);
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return clients;
+        return client;
     }
 }

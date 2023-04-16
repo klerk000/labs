@@ -17,42 +17,52 @@ public class RoomsHasOrderRepository implements RoomsHasOrderDao {
     }
 
     @Override
-    public void save(RoomsHasOrder obj) {
+    public void saveNativeSQL(RoomsHasOrder obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        // SQL
         entityManager.createNativeQuery(
                         "INSERT INTO `rooms_has_order` (`name`) VALUES (?)")
                 .setParameter(1, obj.getName())
                 .executeUpdate();
-        entityManager.getTransaction().commit();
 
+        entityManager.getTransaction().commit();
         entityManager.close();
     }
 
     @Override
-    public void update(RoomsHasOrder obj) {
+    public void saveHQL(RoomsHasOrder obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.persist(obj);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void updateNativeSQL(RoomsHasOrder obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
         entityManager.createNativeQuery("update `rooms_has_order` set name=? where id=?")
                 .setParameter(1, obj.getName())
                 .setParameter(2, obj.getId())
-
                 .executeUpdate();
-        entityManager.getTransaction().commit();
 
+        entityManager.getTransaction().commit();
         entityManager.close();
     }
 
     @Override
-    public void delete(RoomsHasOrder obj) {
+    public void updateHQL(RoomsHasOrder obj) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.createQuery("delete from RoomsHasOrder as rhs where rhs.id=:id")
-                .setParameter("id", obj.getRoomsList())
-                .setParameter("id", obj.getOrder())
+
+        entityManager.createQuery("update RoomsHasOrder set name=:name where id=:id")
+                .setParameter("name", obj.getName())
+                .setParameter("id", obj.getId())
                 .executeUpdate();
 
         entityManager.getTransaction().commit();
@@ -60,7 +70,45 @@ public class RoomsHasOrderRepository implements RoomsHasOrderDao {
     }
 
     @Override
-    public void deleteAll() {
+    public void deleteNativeSQL(RoomsHasOrder obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery("delete from `rooms_has_order` where id=?")
+                .setParameter(1, obj.getId())
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteHQL(RoomsHasOrder obj) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createQuery("delete from RoomsHasOrder where id=:id")
+                .setParameter("id", obj.getId())
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteAllNativeSQL() {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        entityManager.createNativeQuery("delete * from `rooms_has_order`")
+                .executeUpdate();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    @Override
+    public void deleteAllHQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
@@ -72,48 +120,94 @@ public class RoomsHasOrderRepository implements RoomsHasOrderDao {
     }
 
     @Override
-    public List<RoomsHasOrder> findAll() {
+    public List<RoomsHasOrder> findAllNativeSQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        List<RoomsHasOrder> rhs1 = entityManager.createNativeQuery("select * from `rooms_has_order`")
-                .getResultList();
+        List<RoomsHasOrder> roomsHasOrders =
+                entityManager.createNativeQuery("select * from `rooms_has_order`").getResultList();
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return rhs1;
+        return roomsHasOrders;
     }
 
     @Override
-    public RoomsHasOrder findById(Long id) {
+    public List<RoomsHasOrder> findAllHQL() {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        RoomsHasOrder rhs1 = entityManager.createQuery(
-                "select rhs from RoomsHasOrder as rhs where  rhs.id=:id", RoomsHasOrder.class)
+        List<RoomsHasOrder> roomsHasOrders =
+                entityManager.createQuery("select rho from RoomsHasOrder as rho").getResultList();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return roomsHasOrders;
+    }
+
+    @Override
+    public RoomsHasOrder findByIdNativeSQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        RoomsHasOrder roomsHasOrder = (RoomsHasOrder) entityManager.createNativeQuery(
+                "select * from `rooms_has_order` where id=?", RoomsHasOrder.class)
+                .setParameter(1, id)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return roomsHasOrder;
+    }
+
+    @Override
+    public RoomsHasOrder findByIdHQL(Long id) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        RoomsHasOrder roomsHasOrder = entityManager.createQuery(
+                        "select rho from RoomsHasOrder as rho where  rho.id=:id", RoomsHasOrder.class)
                 .setParameter("id", id)
                 .getResultList().get(0);
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return rhs1;
+        return roomsHasOrder;
     }
 
     @Override
-    public RoomsHasOrder findByName(String name) {
+    public RoomsHasOrder findByNameNativeSQL(String name) {
         EntityManager entityManager = sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
-        RoomsHasOrder rhs1 = entityManager.createQuery(
-                "select rhs from RoomsHasOrder as rhs where  rhs.name=:name", RoomsHasOrder.class)
+        RoomsHasOrder roomsHasOrder = (RoomsHasOrder) entityManager.createNativeQuery(
+                "select * from `rooms_has_order` as rho where rho.name=?", RoomsHasOrder.class)
+                .setParameter(1, name)
+                .getResultList().get(0);
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+
+        return roomsHasOrder;
+    }
+
+    @Override
+    public RoomsHasOrder findByNameHQL(String name) {
+        EntityManager entityManager = sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        RoomsHasOrder roomsHasOrder = entityManager.createQuery(
+                        "select rho from RoomsHasOrder as rho where  rho.name=:name", RoomsHasOrder.class)
                 .setParameter("name", name)
                 .getResultList().get(0);
 
         entityManager.getTransaction().commit();
         entityManager.close();
 
-        return rhs1;
+        return roomsHasOrder;
     }
 }
